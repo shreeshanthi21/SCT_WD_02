@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STOPWATCH</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <p class="title">STOPWATCH</p>
+  <div class="container">
+    <div class="watch">
+      <div class="outer-circle">
+        <div class="inner-circle">
+          <span class="text minute">0 :</span>
+          <span class="text sec">0 :</span>
+          <span class="text msec">0</span>
+        </div>
+      </div>
+      <div class="button-wrapper">
+        <button class="button reset hidden">RESET</button>
+        <button class="button play">PLAY</button>
+        <button class="button lap hidden">LAP</button>
+      </div>
+      <div>
+        <ul class="laps">
+          <!-- Laps will be displayed here -->
+        </ul>
+        <button class="lap-clear-button hidden">CLEAR ALL</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const playButton = document.querySelector(".play");
+    const lapButton = document.querySelector(".lap");
+    const resetButton = document.querySelector(".reset");
+    const minuteDisplay = document.querySelector(".minute");
+    const secondDisplay = document.querySelector(".sec");
+    const centiSecondDisplay = document.querySelector(".msec");
+    const lapsContainer = document.querySelector(".laps");
+    const clearAllButton = document.querySelector(".lap-clear-button");
+    const outerCircle = document.querySelector(".outer-circle");
+
+
+    let isPlaying = false;
+    let minuteCounter = 0;
+    let secCounter = 0;
+    let centiCounter = 0;
+    let minuteInterval;
+    let secInterval;
+    let centiSecInterval;
+
+    const updateDisplay = () => {
+      minuteDisplay.innerText = `${minuteCounter} :`;
+      secondDisplay.innerText = `${secCounter} :`;
+      centiSecondDisplay.innerText = `${centiCounter}`;
+    };
+
+    const toggleButtonVisibility = () => {
+      lapButton.classList.remove("hidden");
+      resetButton.classList.remove("hidden");
+    };
+
+    const play = () => {
+  if (isPlaying) {
+    playButton.innerHTML = 'PLAY';
+    clearInterval(centiSecInterval);
+    outerCircle.classList.remove('running'); // Stop gradient animation
+    isPlaying = false;
+  } else {
+    playButton.innerHTML = 'PAUSE';
+    centiSecInterval = setInterval(() => {
+      centiCounter++;
+      if (centiCounter >= 100) {
+        centiCounter = 0;
+        secCounter++;
+        if (secCounter >= 60) {
+          secCounter = 0;
+          minuteCounter++;
+        }
+      }
+      updateDisplay();
+    }, 10);
+    outerCircle.classList.add('running'); // Start gradient animation
+    isPlaying = true;
+  }
+  toggleButtonVisibility();
+};
+
+    const reset = () => {
+      clearInterval(minuteInterval);
+      clearInterval(secInterval);
+      clearInterval(centiSecInterval);
+      minuteCounter = 0;
+      secCounter = 0;
+      centiCounter = 0;
+      updateDisplay();
+      lapButton.classList.add("hidden");
+      resetButton.classList.add("hidden");
+      playButton.innerHTML = 'PLAY';
+      isPlaying = false;
+      lapsContainer.innerHTML = '';
+      clearAllButton.classList.add("hidden");
+    };
+
+    const addLap = () => {
+      const lapItem = document.createElement('li');
+      lapItem.className = 'lap-item';
+      lapItem.innerHTML = `<span class="number">Lap ${lapsContainer.children.length + 1}</span> 
+        <span class="time-stamp">${minuteCounter} : ${secCounter} : ${centiCounter}</span>`;
+      lapsContainer.appendChild(lapItem);
+      clearAllButton.classList.remove("hidden");
+    };
+
+    const clearAllLaps = () => {
+      lapsContainer.innerHTML = '';
+      clearAllButton.classList.add("hidden");
+    };
+
+    playButton.addEventListener("click", play);
+    resetButton.addEventListener("click", reset);
+    lapButton.addEventListener("click", addLap);
+    clearAllButton.addEventListener("click", clearAllLaps);
+  </script>
+</body>
+</html>
+
