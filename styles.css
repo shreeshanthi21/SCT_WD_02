@@ -161,6 +161,7 @@ body {
 .title{
   position: fixed;
   right:78%;
+  diaplay: flex;
   font: bold;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   font-size: 50px  ;
